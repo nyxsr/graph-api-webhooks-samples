@@ -14,7 +14,15 @@ var xhub = require('express-x-hub');
 app.set('port', (process.env.PORT || 5000));
 app.listen(app.get('port'));
 
-app.use(xhub({ algorithm: 'sha1', secret: process.env.APP_SECRET }));
+const webhookMiddleware = require('x-hub-signature').middleware;
+
+app.use(webhookMiddleware({
+  algorithm: 'sha1',
+  secret: process.env.APP_SECRET,
+  require: true,
+  getRawBody: req => req.rawBody
+}));
+// app.use(xhub({ algorithm: 'sha1', secret: process.env.APP_SECRET }));
 app.use(bodyParser.json());
 
 var token = process.env.TOKEN || 'token';
